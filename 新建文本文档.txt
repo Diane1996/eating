@@ -1,0 +1,170 @@
+前端
+	商品列表
+		显示所有层级分类
+	搜索商品
+	购物车
+		向购物车添加商品
+		修改商品数量
+		删除商品
+		我的购物车
+	用户订单
+		查看订单详情
+		订单支付
+		取消未付款订单
+	用户登录
+	（位置选择）
+后台
+	管理商品
+		新增一级分类，新增二级分类
+		修改一级分类，修改二级分类
+		删除一级分类，删除二级分类
+	（新增商品，商品下架，商品修改）
+	搜索商品
+	管理用户订单
+		查看订单详情
+		取消订单
+		完成自取商品
+
+thinkjs
+	没有model,要写model需要通过其他方式。
+	可以通过controller和logic直接配置好路由
+	controller里直接进行数据库操作，this.model('表名')，（可以在adapter.js中配置数据库的前缀，这样在后续进行数据库的操作时可以尽量少的书写表名）。
+
+
+进行数据库操作时，返回的数据出现RowDataPacket，
+数据显示为：[ RowDataPacket { id: 1, name: 'admin', password: 'admin' } ] 
+最后使用JSON.parse(JSON.stringify(results))进行解析返回的结果。
+
+在login中进行数据库查询时，在indexAction()中调用loginAction()返回的数据是undefined，所有的数据库都是异步的，所以需要在indexAction()加入async await
+
+
+http 无状态协议
+cookie：给客户端们颁发一个通行证吧，每人一个，无论谁访问都必须携带自己通行证。
+这样服务器就能从通行证上确认客户身份了。这就是Cookie的工作原理。
+
+session: Session是另一种记录客户状态的机制，不同的是Cookie保存在客户端浏览器中，
+而Session保存在服务器上。客户端浏览器访问服务器的时候，服务器把客户端信息以某种形式记录在服务器上。
+这就是Session。
+
+token: 用户身份验证的方式
+
+
+
+在logic中设置请求的方法：
+    this.allowMethods = 'get/post';
+ 然后在controller中就可以通过this.get/post(参数)去获取请求的数据了。
+ 可以使用this.get()获取所有请求的数据，返回的数据是一个对象，例如：{ username: 'admin', password: 'admin' }
+可以直接使用对应的key值获取数据
+
+
+
+
+ 可以通过 think.isEmpty 方法判断返回值是否为空。
+
+
+ 登录信息： 登录的ip地址，登录的时间
+
+ 给表eating_admin添加admin_role，设置不同的管理员（1为超级管理员，2为普通管理员）
+
+ 使用thenAdd()出现下列错误：
+[2017-12-20T16:41:32.112] [7020] [ERROR] - unhandledRejection, times: 3, pid: 7020
+[2017-12-20T16:41:32.112] [7020] [ERROR] - Error [ERR_HTTP_HEADERS_SENT]: Cannot set header
+s after they are sent to the client
+暂时不能确定是什么问题（数据能插入，会报错）
+=> 确定问题：异步，数据库的执行是异步的，所以在indexAction()中执行this.addAction()时需要添加async await
+
+
+ Babel 之类的工具编译成 ES6 语法:其内部是通过generator function实现的，在外层返回一个promise对象。
+function _asyncToGenerator(fn) {
+  return function() {
+    var gen = fn.apply(this, arguments);
+    return new Promise(function(resolve, reject) {
+      function step(key, arg) {
+        try {
+          var info = gen[key](arg);
+          var value = info.value;
+        } catch (error) {
+          reject(error);
+          return;
+        }
+        if (info.done) {
+          resolve(value);
+        } else {
+          return Promise.resolve(value).then(function(value) {
+            step('next', value);
+          }, function(err) {
+            step('throw', err);
+          });
+        }
+      }
+
+      return step('next');
+    });
+  };
+}
+
+thinkjs中没有model，所以在使用model时需要_asyncToGenerator()函数的异步处理，然后才能使用在model中定义的自定义的方法，调用方式：
+	this.model(model文件名).getList();
+getList()为对应model文件名中的自定义方法，但是这样去使用在使用时会很混乱，不知道是thinkjs的方法还是自定义的方法。而且在不同的model文件中去调用时，也会对调用的谁的方法更加混乱，造成代码难以阅读。、
+解决方式一：
+	在model中自定义的方法尽可能的长
+解决方式二：
+	不使用model，所有的方法都在controller中去编写
+
+
+service是用来处理远程调用其他接口的
+
+
+    // 获取openid
+    const options = {
+      method: 'GET',
+      url: 'https://api.weixin.qq.com/sns/jscode2session',
+      qs: {
+        grant_type: 'authorization_code',
+        js_code: code,
+        secret: think.config('weixin.secret'),
+        appid: think.config('weixin.appid')
+      }
+    };
+
+
+    // 验证用户信息完整性（hash.update()方法就是将字符串相加，然后在hash.digest()将字符串加密返回）
+    const crypto = require('crypto');
+    const sha1 = crypto.createHash('sha1').update(fullUserInfo.rawData + sessionData.session_key).digest('hex');
+    if (fullUserInfo.signature !== sha1) {
+      return this.fail('登录失败');
+    }
+
+
+订单：status：
+   0：订单未付款（用户） PAY_NO
+   1：订单已付款（用户）  PAYMENT
+   2：商家接单   ORDER_RECEIVE
+   3：开始送餐   DELIVER
+   4：订单完成   ORDER_END
+   5：取消订单，申请退款（用户）  ORDER_CANCEL
+   6：订单已取消，成功退款     REFUND
+
+{
+ORDER_PAY_NO: 0
+ORDER_PAYMENT: 1
+ORDER_RECEIVE: 2
+ORDER_DELIVER: 3
+ORDER_END: 4
+ORDER_CANCEL: 5
+ORDER_REFUND: 6
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
