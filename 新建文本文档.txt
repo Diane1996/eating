@@ -145,18 +145,30 @@ service是用来处理远程调用其他接口的
    5：取消订单，申请退款（用户）  ORDER_CANCEL
    6：订单已取消，成功退款     REFUND
 
-{
-ORDER_PAY_NO: 0
-ORDER_PAYMENT: 1
-ORDER_RECEIVE: 2
-ORDER_DELIVER: 3
-ORDER_END: 4
-ORDER_CANCEL: 5
-ORDER_REFUND: 6
+const ORDER_CODE = {
+  PAY_NO: 0,
+  PAYMENT: 1,
+  RECEIVE: 2,
+  DELIVER: 3,
+  END: 4,
+  CANCEL: 5,
+  REFUND: 6
+};
+
+    type:
+      0: 堂食
+      1：打包带走
+      2：外送
+const TYPE_CODE = {
+  DINE_IN: 0,
+  TAKEAWAY: 1,
+  TAKEOUT: 2
 }
 
-
-
+（通过前端返回数据判断，如果含有桌号，就存入数据库，如果没有即是打包或外卖）
+堂食：
+    设置座号，就餐人数
+打包，外送：
 
 
 
