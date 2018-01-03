@@ -24,9 +24,10 @@ module.exports = class extends Base {
     const orderId = info.order_id;
     const deskNum = info.desk_num;
     const peopleNum = info.people_num;
+    let result;
     switch (TYPE) {
       case TYPE_CODE.DINE_IN:
-        const result = await this.model('order')
+        result = await this.model('order')
           .where({order_id: orderId})
           .update({
             type: TYPE,
@@ -39,7 +40,7 @@ module.exports = class extends Base {
         await this.orderAction(ORDER_CODE.REFUND, orderId); // 退款成功
         break;
       case TYPE_CODE.TAKEAWAY:
-        const result = await this.model('order')
+        result = await this.model('order')
           .where({order_id: orderId})
           .update({
             type: TYPE
@@ -49,7 +50,7 @@ module.exports = class extends Base {
         await this.orderAction(ORDER_CODE.REFUND, orderId); // 退款成功
         break;
       case TYPE_CODE.TAKEOUT:
-        const result = await this.model('order')
+        result = await this.model('order')
           .where({order_id: orderId})
           .update({
             type: TYPE

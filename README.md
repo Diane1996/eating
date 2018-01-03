@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 
 Application created by [ThinkJS](http://www.thinkjs.org)
 
@@ -23,4 +22,3 @@ pm2 startOrReload pm2.json
 ```
 =======
 # eating
->>>>>>> 9cd6a745f31e24e565774b47b04f25900c355b25
