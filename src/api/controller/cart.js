@@ -18,18 +18,20 @@ module.exports = class extends Base {
     for (const cartItem of cartList) {
       const itemValue = await this.model('food')
         .where({food_id: cartItem.food_id})
-        .getField('food_price,food_picture,food_name');
+        .getField('food_id,food_price,food_picture,food_name');
+      itemValue.count = cartItem.amount;
       list.push(itemValue);
-      total += cartItem.amount * itemValue.price;
+      total += cartItem.amount * itemValue.food_price;
     }
 
-    return {
+    const result =  {
       open_id: open_id,
       food_data: list,
       total: total
     };
 
-  }
+    this.success({result: result});
+  };
 
   async addAction() {
     const value = this.get();

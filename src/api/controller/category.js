@@ -12,4 +12,7 @@ module.exports = class extends Base {
       this.success({result: category});
     }
   }
+
+  async getAllCateAction() {
+  }
 };

@@ -48,7 +48,7 @@ module.exports = class extends Base {
       receiver_name: value.receiver_name,
       receiver_phone: value.receiver_phone,
       receiver_address: value.receiver_address,
-      created: moment.now(),
+      created: moment().format('YYYY-MM-DD HH:mm:ss'),
       receiver_version: 1,
       receiver_isDelete: 0
     };
@@ -57,7 +57,6 @@ module.exports = class extends Base {
     const result = await this.model('order_shipping')
       .where({
         open_id: value.open_id,
-        receiver_id: rId,
         receiver_name: value.receiver_name,
         receiver_phone: value.receiver_phone,
         receiver_address: value.receiver_address,
@@ -76,23 +75,33 @@ module.exports = class extends Base {
 
   async updateAction() {
     const value = this.get();
+
+    const version = await this.model('order_shipping')
+      .where({
+        open_id: value.open_id,
+        receiver_id: value.receiver_id
+      })
+      .max('receiver_version');
+    console.log(version);
+
     const data = {
       open_id: value.open_id,
-      receiver_name: value.receiver_name,
+      receiver_id: value.receiver_id,
       receiver_phone: value.receiver_phone,
+      receiver_name: value.receiver_name,
       receiver_address: value.receiver_address,
-      updated: moment.now(),
-      receiver_version: value.receiver_version + 1,
+      created: moment().format('YYYY-MM-DD HH:mm:ss'),
+      receiver_version: version + 1,
       receiver_isDelete: 0
     };
 
     const result = await this.model('order_shipping')
       .where({
         open_id: value.open_id,
+        receiver_id: value.receiver_id,
         receiver_name: value.receiver_name,
         receiver_phone: value.receiver_phone,
-        receiver_address: value.receiver_address,
-        receiver_version: value.receiver_version + 1
+        receiver_address: value.receiver_address
       }).thenAdd(data);
 
     if (result === 0) {
@@ -128,7 +137,8 @@ module.exports = class extends Base {
 
       const open_id = value.open_id;
 
-      const result = yield _this.model('orderShipping').selectAll(open_id);
+      const result = yield _this.model('orderShipping')
+        .selectAll(open_id);
       console.log(result);
 
       if (think.isEmpty(result)) {
@@ -140,6 +150,4 @@ module.exports = class extends Base {
       }
     })();
   }
-
-
 }

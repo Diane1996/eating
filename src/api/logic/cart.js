@@ -3,19 +3,5 @@ module.exports = class extends think.Logic {
 
   }
 
-  getCartAction() {
 
-  }
-
-  addAction() {
-
-  }
-
-  updateAction() {
-
-  }
-
-  deleteAction() {
-
-  }
 };

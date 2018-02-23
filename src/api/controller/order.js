@@ -17,7 +17,6 @@ module.exports = class extends Base {
   }
 
   async createAction() {
-
     const orderId = Math.random().toString(16).substring(2, 10);
     const value = this.get();
     const addOrderData = {
@@ -28,16 +27,24 @@ module.exports = class extends Base {
       desk_num: value.desk_num,
       people_num: value.people_num,
       receiver_id: value.receiver_id,
-      create_time: moment.format('YYYY-MM-DD HH:mm:ss'),
-      status: ORDER_CODE.PAY_NO
+      create_time: moment().format('YYYY-MM-DD HH:mm:ss'),
+      status: ORDER_CODE.PAY_NO,
+      remark: value.remark
     };
-    const OrderItemData = value.food_data;
-
+    const OrderItemData = JSON.parse(value.food_data);
     const result = await this.model('order')
       .where({order_id: orderId})
       .thenAdd(addOrderData);
+    var dataList = [];
+    console.log(OrderItemData[0].food_id)
+    for (const item of OrderItemData) {
+      console.log(typeof item.food_id)
+      dataList.push({food_id: item.food_id[0], order_id: orderId, count: item.count});
+    }
 
-    const resultOrderItem = await this.model('order_item').addMany(OrderItemData);
+    console.log(dataList);
+    const resultOrderItem = await this.model('order_item').addMany(dataList);
+    console.log(resultOrderItem);
 
     if (result === 0 || resultOrderItem === 0) {
       this.ctx.response.body = '订单已存在，不能添加';
