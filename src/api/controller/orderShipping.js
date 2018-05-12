@@ -38,29 +38,28 @@ module.exports = class extends Base {
   }
 
   async addAction() {
-    const value = this.get();
+    const value = this.post();
     const rId = Math.random().toString(16).substring(2, 10);
 
     // 用户信息初始版本为1，每更新一次就加一
     const data = {
       open_id: value.open_id,
       receiver_id: rId,
-      receiver_name: value.receiver_name,
-      receiver_phone: value.receiver_phone,
-      receiver_address: value.receiver_address,
+      name: value.name,
+      phone: value.phone,
+      address: value.address,
       created: moment().format('YYYY-MM-DD HH:mm:ss'),
-      receiver_version: 1,
+      version: 1,
       receiver_isDelete: 0
     };
 
-    //
     const result = await this.model('order_shipping')
       .where({
         open_id: value.open_id,
-        receiver_name: value.receiver_name,
-        receiver_phone: value.receiver_phone,
-        receiver_address: value.receiver_address,
-        receiver_version: ['>', 0]
+        name: value.name,
+        phone: value.phone,
+        address: value.address,
+        version: ['>', 0]
       })
       .thenAdd(data);
 
@@ -74,24 +73,24 @@ module.exports = class extends Base {
   }
 
   async updateAction() {
-    const value = this.get();
+    const value = this.post();
 
     const version = await this.model('order_shipping')
       .where({
         open_id: value.open_id,
         receiver_id: value.receiver_id
       })
-      .max('receiver_version');
-    console.log(version);
+      .max('version');
+    console.log('version: ', version);
 
     const data = {
       open_id: value.open_id,
       receiver_id: value.receiver_id,
-      receiver_phone: value.receiver_phone,
-      receiver_name: value.receiver_name,
-      receiver_address: value.receiver_address,
+      phone: value.phone,
+      name: value.name,
+      address: value.address,
       created: moment().format('YYYY-MM-DD HH:mm:ss'),
-      receiver_version: version + 1,
+      version: version + 1,
       receiver_isDelete: 0
     };
 
@@ -99,9 +98,9 @@ module.exports = class extends Base {
       .where({
         open_id: value.open_id,
         receiver_id: value.receiver_id,
-        receiver_name: value.receiver_name,
-        receiver_phone: value.receiver_phone,
-        receiver_address: value.receiver_address
+        phone: value.phone,
+        name: value.name,
+        address: value.address
       }).thenAdd(data);
 
     if (result === 0) {
@@ -113,11 +112,15 @@ module.exports = class extends Base {
     }
   }
 
-  async deleteAction() {
-    const value = this.get();
+  async deleteAddressAction() {
+    const value = this.post();
+    var data = {
+      receiver_id: value.receiver_id,
+      open_id: value.open_id
+    };
 
     const result = await this.model('order_shipping')
-      .where({receiver_id: value.receiver_id}).update({receiver_isDelete: 1});
+      .where(data).update({isDelete: 1});
 
     if (result === 0) {
       this.ctx.response.body = '数据删除失败，请重试';
@@ -129,16 +132,19 @@ module.exports = class extends Base {
   }
 
   async findAllAction() {
-
     const _this = this;
 
-    return _asyncToGenerator(function* () {
+    return _asyncToGenerator(function * () {
       const value = _this.get();
 
-      const open_id = value.open_id;
+        const open_id = value.open_id;
+        // const open_id = 123456;
 
-      const result = yield _this.model('orderShipping')
-        .selectAll(open_id);
+      const result = yield _this.model('orderShipping').selectAll(open_id);
+      // const result = yield _this.model('order_Shipping')
+      // .where({open_id: open_id, isDelete: 0})
+      // .max('version')
+      // .select();
       console.log(result);
 
       if (think.isEmpty(result)) {
@@ -150,4 +156,4 @@ module.exports = class extends Base {
       }
     })();
   }
-}
+};

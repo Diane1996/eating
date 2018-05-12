@@ -7,10 +7,9 @@ module.exports = class extends Base {
     // await this.updateAction();
   }
 
-  // food_id自动生成，不允许修改
-
   async addAction() {
     const cId = this.get('category_id');
+      // food_id自动生成，不允许修改
     const fId = Math.random().toString(16).substring(2, 10); // 8位16进制，字符串
     const price = this.get('price');
     const picture = this.get('picture');

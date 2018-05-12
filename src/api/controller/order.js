@@ -11,9 +11,61 @@ const ORDER_CODE = {
   REFUND: 6
 };
 
+function _asyncToGenerator(fn) {
+  return function() {
+    var gen = fn.apply(this, arguments);
+    return new Promise(function(resolve, reject) {
+      function step(key, arg) {
+        try {
+          var info = gen[key](arg);
+          var value = info.value;
+        } catch (error) {
+          reject(error);
+          return;
+        }
+        if (info.done) {
+          resolve(value);
+        } else {
+          return Promise.resolve(value).then(function(value) {
+            step('next', value);
+          }, function(err) {
+            step('throw', err);
+          });
+        }
+      }
+
+      return step('next');
+    });
+  };
+}
+
 module.exports = class extends Base {
   async indexAction() {
 
+  }
+
+  async findAllAction() {
+    const _this = this;
+    return _asyncToGenerator(async function () {
+      var value = _this.get();
+
+      var orderList = await _this.model('order')
+        .where({open_id: value.open_id})
+        .select();
+      var orderArr = [];
+      orderList.map(async(item) => {
+        var foodItem = await _this.model('orderControl').selectAll(item.order_id);
+        // var orderItem = await this.model('order_item')
+        //   .where({order_id: item.order_id})
+        //   .select();
+        // orderItem = JSON.parse(JSON.stringify(orderItem)); // 得到菜品id
+        // var firstItem = orderItem[0]; // 取第一个作为图片和名字的展示
+        item = JSON.parse(JSON.stringify(item, ['create_time', 'order_id', 'total_price', 'status']));
+        orderArr.push(foodItem);
+        console.log('orderItem: ', orderItem);
+      });
+      _this.success({result: orderList});
+    })();
   }
 
   async createAction() {
@@ -36,9 +88,9 @@ module.exports = class extends Base {
       .where({order_id: orderId})
       .thenAdd(addOrderData);
     var dataList = [];
-    console.log(OrderItemData[0].food_id)
+    console.log(OrderItemData[0].food_id);
     for (const item of OrderItemData) {
-      console.log(typeof item.food_id)
+      console.log(typeof item.food_id);
       dataList.push({food_id: item.food_id[0], order_id: orderId, count: item.count});
     }
 
@@ -96,4 +148,4 @@ module.exports = class extends Base {
       this.success({result: result});
     }
   }
-}
+};

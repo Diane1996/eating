@@ -210,6 +210,9 @@ const TYPE_CODE = {
     解决：删除与controller一样的方法
 
 
+统一使用有下滑线的open_id写法
+
+默认地址的设置放入缓存中
 
 
 
