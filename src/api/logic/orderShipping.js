@@ -1,16 +1,16 @@
 module.exports = class extends think.Logic {
   addAction() {
-    this.allowMethods = 'get';
+    this.allowMethods = 'post';
     this.rules = {
       open_id: {required: true, string: true},
-      receiver_name: {required: true, string: true},
-      receiver_phone: {required: true, string: true},
-      receiver_address: {required: true, string: true}
+      name: {required: true, string: true},
+      phone: {required: true, string: true},
+      address: {required: true, string: true}
     };
   }
 
   updateAction() {
-    this.allowMethods = 'get';
+    this.allowMethods = 'post';
     this.rules = {
       receiver_id: {required: true, string: true}
     };

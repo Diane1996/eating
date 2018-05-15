@@ -158,7 +158,7 @@ const ORDER_CODE = {
     type:
       0: 堂食
       1：打包带走
-      2：外送
+      2：外卖
 const TYPE_CODE = {
   DINE_IN: 0,
   TAKEAWAY: 1,
@@ -210,8 +210,16 @@ const TYPE_CODE = {
     解决：删除与controller一样的方法
 
 
+统一使用有下滑线的open_id写法
 
+默认地址的设置放入缓存中
 
+sql:
+    查询用户订单列表的展示图片，名字信息，在order中查询用户订单，拿到order_id去order_item中查询所有food_id，取第一个food_id在food中查询图片和名字
+
+在获取多张表的数据时
+    1.写sql语句进行获取    不会写sql
+    2.通过promise进行链式调用查询     目前不知道如何将promise的返回值返回到前端去，需要研究一下，目前先使用增加表中的数据的方法，（改变表的结构不需要再同时查询几个数据表）
 
 
 
