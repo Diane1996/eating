@@ -41,9 +41,7 @@ function _asyncToGenerator(fn) {
 
 module.exports = class extends Base {
   async indexAction() {
-
   }
-
   async findAllAction() {
     const _this = this;
     var value = _this.get();
@@ -123,17 +121,17 @@ module.exports = class extends Base {
       .select();
     orderDetail = JSON.parse(JSON.stringify(orderDetail));
     orderDetail = orderDetail[0];
-    switch (orderDetail.type) {
-      case 0:
-        orderDetail.orderType = '堂食';
-        break;
-      case 1:
-        orderDetail.orderType = '外带';
-        break;
-      case 2:
-        orderDetail.orderType = '外卖';
-        break;
-    }
+    // switch (orderDetail.type) {
+    //   case 0:
+    //     orderDetail.orderType = '堂食';
+    //     break;
+    //   case 1:
+    //     orderDetail.orderType = '外带';
+    //     break;
+    //   case 2:
+    //     orderDetail.orderType = '外卖';
+    //     break;
+    // }
 
     this.success({result: orderDetail});
   }
@@ -141,39 +139,42 @@ module.exports = class extends Base {
   async createAction() {
     const orderId = Math.random().toString(16).substring(2, 10);
     const value = this.get();
+    console.log('value: ', value, value.type);
     const addOrderData = {
       order_id: orderId,
       open_id: value.open_id,
-      shipping_fee: value.shipping_fee,
-      type: value.type,
+      total_price: value.total_price,
+      eatingType: value.type,
       desk_num: value.desk_num,
       people_num: value.people_num,
       receiver_id: value.receiver_id,
       create_time: moment().format('YYYY-MM-DD HH:mm:ss'),
       status: ORDER_CODE.PAY_NO,
-      remark: value.remark
+      remark: value.remark,
+      first_name: value.first_name,
+      first_picture: value.first_picture
     };
-    const OrderItemData = JSON.parse(value.food_data);
+
+    var orderItemData = value.foodList;
     const result = await this.model('order')
       .where({order_id: orderId})
       .thenAdd(addOrderData);
     var dataList = [];
-    console.log(OrderItemData[0].food_id);
-    for (const item of OrderItemData) {
-      console.log(typeof item.food_id);
-      dataList.push({food_id: item.food_id[0], order_id: orderId, count: item.count});
-    }
+    orderItemData = JSON.parse(orderItemData);
+    orderItemData.map((item) => {
+      dataList.push({food_id: item.food_id, order_id: orderId, count: item.count});
+    });
 
-    console.log(dataList);
+    console.log('dataList: ', dataList);
     const resultOrderItem = await this.model('order_item').addMany(dataList);
-    console.log(resultOrderItem);
+    // console.log('resultOrderItem: ', resultOrderItem);
 
     if (result === 0 || resultOrderItem === 0) {
       this.ctx.response.body = '订单已存在，不能添加';
       this.fail('402091', 'Order_exist_Error');
     } else {
       this.ctx.response.body = '添加数据成功';
-      this.success({result: result});
+      this.success({result: orderId});
     }
   }
 

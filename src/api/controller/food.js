@@ -44,15 +44,15 @@ module.exports = class extends Base {
     var info = this.get();
     var foodid = Math.random().toString(16).substring(2, 10);
     var data = {
-      food_name: info.name,
+      name: info.name,
       food_id: foodid,
-      food_price: info.price,
-      food_picture: info.url,
-      food_sales: info.sale,
+      price: info.price,
+      picture: info.picture,
+      sales: 0,
       category_id: info.category_id
     };
     const result = await this.model('food')
-      .where({food_name: info.name})
+      .where({name: info.name})
       .thenAdd(data);
     this.success({
       result: result

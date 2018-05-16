@@ -71,6 +71,14 @@ module.exports = class extends Base {
       this.success({result: result});
     }
   }
+  async getOrderAddressAction () {
+    var value = this.get();
+    var receiver_id = value.receiver_id;
+    var address = await this.model('order_shipping')
+      .where({receiver_id: receiver_id})
+      .select();
+    this.success({result: address});
+  }
 
   async updateAction() {
     const value = this.post();
