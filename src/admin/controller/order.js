@@ -64,9 +64,12 @@ module.exports = class extends Base {
   }
 
   // 商家通过更改status来更新订单状态
-  async orderAction(CODE, orderId) {
+  async orderAction() {
+    const value = this.get();
+    const CODE = value.status;
+    const orderId = value.orderId;
     const time = moment().format('YYYY-MM-DD HH:mm:ss');
-    let updateData = {
+    const updateData = {
       status: CODE
     };
     switch (CODE) {
@@ -88,10 +91,35 @@ module.exports = class extends Base {
       .update(updateData);
     if (result == 0) {
       this.ctx.response.body = '订单不存在，无法修改';
-      this.fail('402021', 'Order_Receive_Error');
+      this.jsonp('402021', 'Order_Receive_Error');
     } else {
       this.ctx.response.body = '商家已经接单，请等待';
-      this.success({result: result});
+      this.jsonp({result: result});
     }
+  }
+
+  async getAllOrderListAction() {
+    var result = await this.model('order').select();
+    this.jsonp(result.reverse());
+  }
+
+  // 获取单个的详细信息
+  async getOneDetailAction() {
+    var value = this.get();
+    var order_id = value.order_id;
+    var orderDetail = await this.model('food')
+      .alias('food')
+      .join({
+        table: 'order_item',
+        join: 'left',
+        as: 'order_item',
+        on: ['food_id', 'food_id']
+      })
+      .where({order_id: order_id})
+      .select();
+
+    orderDetail = JSON.parse(JSON.stringify(orderDetail));
+
+    this.jsonp({result: orderDetail});
   }
 };

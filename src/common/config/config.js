@@ -1,5 +1,6 @@
 // default config
 module.exports = {
+  callback_name: 'callbacks',
   workers: 1
   // cookie: {
   //   domain: '',

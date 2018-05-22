@@ -100,23 +100,31 @@ module.exports = class extends Base {
     var order_id = value.order_id;
     const _this = this;
 
-    const orderItemList = await this.model('order_item')
+    var orderItemList = await this.model('order_item')
       .where({order_id: order_id})
       .select();
+    orderItemList = JSON.parse(JSON.stringify(orderItemList));
     console.log('orderItemList: ', orderItemList);
+    Promise.all(orderItemList.map((item) => {
+
+    }));
     return _asyncToGenerator(function * () {
       const result = yield _this.model('foodControl').selectAllOrderMenu(order_id);
-      for (var i = 0; i < result.length; i++) {
-        var data = result[i];
-        for (var j = 0; j < orderItemList.length; j++) {
+      console.log('resultresult: ', result);
+      for (let i = 0; i < result.length; i++) {
+        let data = result[i];
+        for (let j = 0; j < orderItemList.length; j++) {
           if (result[i].food_id === orderItemList[j].food_id) {
             data.count = orderItemList[j].count;
           }
         }
         result[i] = data;
-      }
+        if (i === (result.length - 1)) {
+          console.log('result: ', result)
+          _this.success({result: result});
 
-      _this.success({result: result});
+        }
+      }
     })();
   }
 };

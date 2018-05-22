@@ -12,16 +12,6 @@ module.exports = class extends Base {
       .thenAdd({openid: json.openid});
 
     this.success({result: json});
-    // await this.session(null);
-    // this.ctx.res.once('finish', () => {
-    //   // this.flush(); // 在请求时将 session flush 到存储容器中
-    //   this.ctx.body = this.session('name');
-    //   console.log(this.session('name'));
-    // });
-
-    // await this.cookie('theme', 'grey');
-    // const theme = await this.cookie('theme');
-
   }
 
   async addUserInfoAction() {
@@ -38,8 +28,4 @@ module.exports = class extends Base {
       .where({openid: openid})
       .update(data);
   }
-
-  // 先通过微信接口获取openid,在数据库中验证是否有用户的数据，如果没有用户数据就将用户的基本信息插入说数据库中，
-  // 如果有就直接登录（并更新登录信息）
-
 };

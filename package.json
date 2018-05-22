@@ -11,6 +11,7 @@
     "lint-fix": "eslint --fix src/"
   },
   "dependencies": {
+    "jquery": "^3.3.1",
     "moment": "^2.20.1",
     "think-cache": "^1.0.0",
     "think-cache-file": "^1.0.8",

@@ -50,7 +50,7 @@ module.exports = class extends Base {
       .where({open_id: value.open_id})
       .select();
     // var orderArr = [];
-    orderList = JSON.parse(JSON.stringify(orderList, ['create_time', 'order_id', 'total_price', 'status', 'first_name', 'first_picture', 'type']));
+    orderList = JSON.parse(JSON.stringify(orderList, ['create_time', 'order_id', 'total_price', 'status', 'first_name', 'first_picture', 'eatingType']));
     for (let i = 0; i < orderList.length; i++) {
       var orderItem = orderList[i];
       switch (orderItem.type) {
@@ -164,10 +164,9 @@ module.exports = class extends Base {
     orderItemData.map((item) => {
       dataList.push({food_id: item.food_id, order_id: orderId, count: item.count});
     });
-
     console.log('dataList: ', dataList);
     const resultOrderItem = await this.model('order_item').addMany(dataList);
-    // console.log('resultOrderItem: ', resultOrderItem);
+    // console.log('resultOrderItem: ', resultOrderItem);npm
 
     if (result === 0 || resultOrderItem === 0) {
       this.ctx.response.body = '订单已存在，不能添加';

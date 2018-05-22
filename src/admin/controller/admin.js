@@ -3,7 +3,7 @@ const Base = require('./base.js');
 module.exports = class extends Base {
   async indexAction() {
     const role = this.get('role');
-    if (role == 1) {
+    if (role === 1) {
       // await this.addAction();
       // await this.updateAction();
       // await this.deleteAction();
@@ -22,14 +22,14 @@ module.exports = class extends Base {
       .thenAdd({
         username: username,
         password: password,
-        admin_role: 2
+        role: 2
       });
     if (result.type === 'exist') {
       this.ctx.response.body = '添加数据失败';
-      this.fail('402012', 'Having_Admin_username_Error');
+      this.jsonp('402012', 'Having_Admin_username_Error');
     } else {
       this.ctx.response.body = '成功添加数据';
-      this.success({result: result});
+      this.jsonp({result: result});
     }
   }
 
@@ -43,7 +43,7 @@ module.exports = class extends Base {
       .update({
         admin_role: role
       });
-    if (result == 0) {
+    if (result === 0) {
       this.ctx.response.body = '修改数据失败';
       this.fail('402014', 'Changing_Admin_username_Error');
     } else {
@@ -54,27 +54,28 @@ module.exports = class extends Base {
 
   async deleteAction() {
     const username = this.get('username');
+    const password = this.get('password');
+
     const result = await this.model('admin')
-      .where({username: username}).delete();
-    if (result == 0) {
+      .where({username: username, password: password}).delete();
+    if (result === 0) {
       this.ctx.response.body = '删除数据失败';
-      this.fail('402015', 'Delete_Admin_Error');
+      this.jsonp('402015', 'Delete_Admin_Error');
     } else {
       this.ctx.response.body = '成功修改数据';
-      this.success({result: result});
+      this.jsonp({result: result});
     }
   }
 
-  async selectAction() {
-    const username = this.get('username');
+  async getAllAction() {
     const result = await this.model('admin')
-      .where({username: username}).find();
+      .where({role: 2}).select();
     if (think.isEmpty(result)) {
       this.ctx.response.body = '数据不存在';
-      this.fail('402016', 'Select_Admin_Empty_Error');
+      this.jsonp('402016', 'Select_Admin_Empty_Error');
     } else {
       this.ctx.response.body = '成功修改数据';
-      this.success({result: result});
+      this.jsonp({result: result});
     }
   }
-}
+};
