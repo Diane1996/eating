@@ -65,9 +65,10 @@ module.exports = class extends Base {
 
   // 商家通过更改status来更新订单状态
   async orderAction() {
+    // console.log('updateData: ', updateData);
     const value = this.get();
-    const CODE = value.status;
-    const orderId = value.orderId;
+    const CODE = value.code;
+    const orderId = value.order_id;
     const time = moment().format('YYYY-MM-DD HH:mm:ss');
     const updateData = {
       status: CODE
@@ -86,10 +87,11 @@ module.exports = class extends Base {
         updateData.refund_time = time;
         break;
     }
+    console.log('updateData: ', updateData);
     const result = await this.model('order')
       .where({order_id: orderId})
       .update(updateData);
-    if (result == 0) {
+    if (result === 0) {
       this.ctx.response.body = '订单不存在，无法修改';
       this.jsonp('402021', 'Order_Receive_Error');
     } else {
@@ -99,7 +101,14 @@ module.exports = class extends Base {
   }
 
   async getAllOrderListAction() {
-    var result = await this.model('order').select();
+    var result = await this.model('order')
+      .join({
+        table: 'user',
+        join: 'left',
+        as: 'user',
+        on: ['open_id', 'openid']
+      })
+      .select();
     this.jsonp(result.reverse());
   }
 
@@ -118,8 +127,24 @@ module.exports = class extends Base {
       .where({order_id: order_id})
       .select();
 
+    var addressDetail = await this.model('order_shipping')
+      .field('name, phone, address')
+      .alias('order_shipping')
+      .join({
+        table: 'order',
+        join: 'left',
+        as: 'order',
+        on: ['receiver_id', 'receiver_id']
+      })
+      .where({order_id: order_id})
+      .select();
+
     orderDetail = JSON.parse(JSON.stringify(orderDetail));
 
-    this.jsonp({result: orderDetail});
+    var data = {
+      orderDetail: orderDetail,
+      addressDetail: addressDetail
+    };
+    this.jsonp(data);
   }
 };

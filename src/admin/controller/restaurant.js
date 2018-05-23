@@ -2,7 +2,15 @@ const Base = require('./base.js');
 
 module.exports = class extends Base {
   async indexAction() {
-    await this.updateAction();
+    const data = await this.model('restaurant').select();
+
+    if (think.isEmpty(data)) {
+      this.ctx.response.body = '数据不存在请重试';
+      this.jsonp('402061', 'Restaurant_empty_Error');
+    } else {
+      this.ctx.response.body = data;
+      this.jsonp({result: data});
+    }
   }
 
   async updateAction() {
@@ -17,12 +25,12 @@ module.exports = class extends Base {
         address: address,
         remark: remark
       });
-    if (result == 0) {
+    if (result === 0) {
       this.ctx.response.body = '修改出错，请稍后再试';
-      this.fail('402011', 'Restaurant_Error');
+      this.jsonp('402011', 'Restaurant_Error');
     } else {
       this.ctx.response.body = '数据修改成功';
-      this.success({result: result});
+      this.jsonp({result: result});
     }
   }
 }
