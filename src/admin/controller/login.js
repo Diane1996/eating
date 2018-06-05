@@ -27,12 +27,30 @@ module.exports = class extends Base {
     const username = this.get('username');
     const password = this.get('password');
 
-    const user = await this.model('admin').where({username: username, password: password}).select();
+    var user = await this.model('admin').where({username: username, password: password}).select();
+    // user = JSON.parse(JSON.stringify(user));
     if (think.isEmpty(user)) {
-      this.ctx.body = '用户名或密码错误';
-      // return this.fail(401, '用户名或密码错误');
+      return this.jsonp(401);
     } else {
+      await this.session('role', user[0].role);
+      await this.session('username', username);
+      console.log('role', user[0].role);
       return this.jsonp(user[0]);
     }
+  }
+
+  async loginOutAction() {
+    await this.session(null);
+    this.jsonp('success');
+  }
+
+  async getLoginStateAction() {
+    var role = await this.session('role');
+    var username = await this.session('username');
+    var result = {
+      role: role,
+      username: username
+    };
+    this.jsonp(result);
   }
 };

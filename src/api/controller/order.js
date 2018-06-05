@@ -67,7 +67,7 @@ module.exports = class extends Base {
       orderList[i] = orderItem;
     }
 
-    this.success({orderList: orderList});
+    this.success({orderList: orderList.reverse()});
     // promise 的方法
     // Promise.all(orderList.map(async(item, index) => {
     //   // var foodItem = await _this.model('orderControl').selectAll(item.order_id); // sql
@@ -112,6 +112,7 @@ module.exports = class extends Base {
     // }
   }
 
+
   // 获取单个的详细信息
   async getOneDetailAction() {
     var value = this.get();
@@ -149,7 +150,8 @@ module.exports = class extends Base {
       people_num: value.people_num,
       receiver_id: value.receiver_id,
       create_time: moment().format('YYYY-MM-DD HH:mm:ss'),
-      status: ORDER_CODE.PAY_NO,
+      // status: ORDER_CODE.PAY_NO,
+      status: ORDER_CODE.PAYMENT,
       remark: value.remark,
       first_name: value.first_name,
       first_picture: value.first_picture

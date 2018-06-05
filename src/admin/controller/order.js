@@ -101,6 +101,27 @@ module.exports = class extends Base {
   }
 
   async getAllOrderListAction() {
+    const user = await this.session('role');
+
+    console.log('user: ', user);
+    if (user === 1 || user === 2) {
+      var result = await this.model('order')
+        .join({
+          table: 'user',
+          join: 'left',
+          as: 'user',
+          on: ['open_id', 'openid']
+        })
+        .where({status: ['<>', 0]})
+        .where('status != 0 and status !=4')
+        .select();
+      this.jsonp(result.reverse());
+    } else {
+      this.jsonp()
+    }
+  }
+
+  async getHistoryOrderListAction() {
     var result = await this.model('order')
       .join({
         table: 'user',
@@ -108,6 +129,7 @@ module.exports = class extends Base {
         as: 'user',
         on: ['open_id', 'openid']
       })
+      .where({status: ['=', 4]})
       .select();
     this.jsonp(result.reverse());
   }
@@ -127,6 +149,11 @@ module.exports = class extends Base {
       .where({order_id: order_id})
       .select();
 
+    var orderRemark = await this.model('order')
+      .field('remark')
+      .where({order_id: order_id})
+      .select();
+
     var addressDetail = await this.model('order_shipping')
       .field('name, phone, address')
       .alias('order_shipping')
@@ -143,7 +170,8 @@ module.exports = class extends Base {
 
     var data = {
       orderDetail: orderDetail,
-      addressDetail: addressDetail
+      addressDetail: addressDetail,
+      orderRemark: orderRemark
     };
     this.jsonp(data);
   }

@@ -2,14 +2,20 @@ const Base = require('./base.js');
 
 module.exports = class extends Base {
   async indexAction() {
-    const data = await this.model('restaurant').select();
+    const user = await this.session('role');
+    console.log('user22222: ', user);
+    if (user === 1) {
+      const data = await this.model('restaurant').select();
 
-    if (think.isEmpty(data)) {
-      this.ctx.response.body = '数据不存在请重试';
-      this.jsonp('402061', 'Restaurant_empty_Error');
+      if (think.isEmpty(data)) {
+        this.ctx.response.body = '数据不存在请重试';
+        this.jsonp('402061', 'Restaurant_empty_Error');
+      } else {
+        this.ctx.response.body = data;
+        this.jsonp({result: data});
+      }
     } else {
-      this.ctx.response.body = data;
-      this.jsonp({result: data});
+      this.jsonp(403);
     }
   }
 
@@ -33,4 +39,4 @@ module.exports = class extends Base {
       this.jsonp({result: result});
     }
   }
-}
+};

@@ -68,14 +68,19 @@ module.exports = class extends Base {
   }
 
   async getAllAction() {
-    const result = await this.model('admin')
-      .where({role: 2}).select();
-    if (think.isEmpty(result)) {
-      this.ctx.response.body = '数据不存在';
-      this.jsonp('402016', 'Select_Admin_Empty_Error');
+    const user = await this.session('role');
+
+    console.log('user: ', user);
+    if (user === 1) {
+      const result = await this.model('admin')
+        .where({role: 2}).select();
+      if (think.isEmpty(result)) {
+        this.jsonp('402016', 'Select_Admin_Empty_Error');
+      } else {
+        this.jsonp({result: result});
+      }
     } else {
-      this.ctx.response.body = '成功修改数据';
-      this.jsonp({result: result});
+      this.jsonp(403);
     }
   }
 };
