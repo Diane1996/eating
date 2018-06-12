@@ -1,7 +1,12 @@
 const path = require('path');
 const isDev = think.env === 'development';
+const kcors = require('kcors');
 
 module.exports = [
+  {
+    handle: kcors,
+    options: {}
+  },
   {
     handle: 'meta',
     options: {

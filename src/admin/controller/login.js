@@ -51,6 +51,6 @@ module.exports = class extends Base {
       role: role,
       username: username
     };
-    this.jsonp(result);
+    this.success(result);
   }
 };

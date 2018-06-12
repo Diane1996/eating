@@ -104,7 +104,7 @@ module.exports = class extends Base {
     const user = await this.session('role');
 
     console.log('user: ', user);
-    if (user === 1 || user === 2) {
+    // if (user === 1 || user === 2) {
       var result = await this.model('order')
         .join({
           table: 'user',
@@ -115,10 +115,10 @@ module.exports = class extends Base {
         .where({status: ['<>', 0]})
         .where('status != 0 and status !=4')
         .select();
-      this.jsonp(result.reverse());
-    } else {
-      this.jsonp()
-    }
+      this.success(result.reverse());
+    // } else {
+    //   this.jsonp()
+    // }
   }
 
   async getHistoryOrderListAction() {
